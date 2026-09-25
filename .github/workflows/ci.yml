@@ -1,23 +1,30 @@
 name: API CI/CD
 
+# 1. Когда запускать (Triggers)
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
+# 2. Что именно делать (Jobs)
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"] # Матрица: запуск на 3-х версиях Python параллельно
 
+    # 3. Пошаговая инструкция (Steps)
     steps:
       - name: Скачиваем код репозитория
         uses: actions/checkout@v4
 
-      - name: Устанавливаем Python 3.11
+      - name: Устанавливаем Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip' # Магия кэширования
 
       - name: Устанавливаем зависимости
         run: |
